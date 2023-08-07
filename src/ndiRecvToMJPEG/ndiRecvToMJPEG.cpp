@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 
 	// Run for one minute
 	using namespace std::chrono;
-	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(5);) {
+	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// The descriptors
 		NDIlib_video_frame_v2_t video_frame;
 		NDIlib_audio_frame_v2_t audio_frame;
@@ -90,13 +90,13 @@ int main(int argc, char* argv[])
 
 				// Video data
 			case NDIlib_frame_type_video:
-				printf("Video data received (%dx%d).\n", video_frame.xres, video_frame.yres);
+				//printf("Video data received (%dx%d).\n", video_frame.xres, video_frame.yres);
 				NDIlib_recv_free_video_v2(pNDI_recv, &video_frame);
 				break;
 
 				// Audio data
 			case NDIlib_frame_type_audio:
-				printf("Audio data received (%d samples).\n", audio_frame.no_samples);
+				//printf("Audio data received (%d samples).\n", audio_frame.no_samples);
 				NDIlib_recv_free_audio_v2(pNDI_recv, &audio_frame);
 				break;
 		}
