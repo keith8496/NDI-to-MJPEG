@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <chrono>
+#include <cstring>
 #include <Processing.NDI.Lib.h>
 
 #ifdef _WIN32
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
-			printf("No change to the sources found.\n");
+			printf("Searching for source...\n");
 			continue;
 		}
 
@@ -40,10 +41,15 @@ int main(int argc, char* argv[])
 		uint32_t no_sources = 0;
 		const NDIlib_source_t* p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
 
-		// Display all the sources.
-		printf("Network sources (%u found).\n", no_sources);
-		for (uint32_t i = 0; i < no_sources; i++)
-			printf("%u. %s\n", i + 1, p_sources[i].p_ndi_name);
+		// Find our source
+		for (uint32_t i = 0; i < no_sources; i++) {
+			const char* searchSourceName = argv[1];
+            const char* ndiSourceName = p_sources[i].p_ndi_name;
+            if ( strcmp(searchSourceName, ndiSourceName) == 0 ) {
+                printf("Found %u. %s\n", i + 1, ndiSourceName);
+                break;
+            }
+        }
 	}
 
 	// Destroy the NDI finder
