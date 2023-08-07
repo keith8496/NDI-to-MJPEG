@@ -8,6 +8,7 @@ BMDSDK := NDIlib_Send_BMD/BMDSDK/Linux
 PROJECTS := \
 	ndiFind \
 	ndiRecvWebControl \
+	ndiRecv \
 	ndiRecvPNG
 
 .PHONY: all
