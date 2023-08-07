@@ -11,6 +11,8 @@
 #endif // _WIN64
 #endif // _WIN32
 
+#define debug true
+
 int main(int argc, char* argv[]) {
 
 	if (argc < 2) {
@@ -43,25 +45,49 @@ int main(int argc, char* argv[]) {
 
 		// Find our source
 		for (uint32_t i = 0; i < no_sources; i++) {
-			if (strcmp(p_sources[i].p_ndi_name,argv[1])==0) {
+			#if debug
+                printf("enter loop");
+            #endif
+            if (strcmp(p_sources[i].p_ndi_name,argv[1])==0) {
+                #if debug
+                    printf("match found");
+                #endif
                 printf("Found %s\n", i + 1, p_sources[i].p_ndi_name);
+                #if debug
+                    printf("set source_no_found");
+                #endif
                 source_no_found = i;
                 break;
             }
         }
+        #if debug
+            printf("for loop exited");
+        #endif
     }
 
+    #if debug
+        printf("test source_no_found");
+    #endif
     if (!source_no_found) {
         printf("Error: Source not found.\n");
         return -2;
     }
 
-	// Destroy the NDI finder
-	NDIlib_find_destroy(pNDI_find);
+    // Destroy the NDI finder
+    #if debug
+        printf("Destroy the NDI finder");
+    #endif
+    NDIlib_find_destroy(pNDI_find);
 
 	// Finished
+    #if debug
+        printf("NDIlib_destroy");
+    #endif
 	NDIlib_destroy();
 
 	// Success. We are done
+    #if debug
+        printf("Success. We are done");
+    #endif
 	return 0;
 }
