@@ -30,7 +30,8 @@ int main(int argc, char* argv[])
 
 	// Run for one minute
 	int source_no_found = -1;
-    using namespace std::chrono;
+    const NDIlib_source_t* p_sources = NULL;
+	using namespace std::chrono;
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
 
 		// Get the updated list of sources
 		uint32_t no_sources = 0;
-		const NDIlib_source_t* p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
+	    p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
 
 		// Find our source
 		for (uint32_t i = 0; i < no_sources; i++) {
@@ -57,6 +58,7 @@ int main(int argc, char* argv[])
 
 	}
 
+    // Error if source not found
     if (source_no_found == -1) {
         printf("Error: Source was not found.\n");
         return -2;
