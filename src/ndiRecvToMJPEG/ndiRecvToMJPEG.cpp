@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <chrono>
-#include <cstring>
 #include <Processing.NDI.Lib.h>
 
 #ifdef _WIN32
@@ -11,22 +10,14 @@
 #endif // _WIN64
 #endif // _WIN32
 
-#define debug true
-
-int main(int argc, char* argv[]) {
-
-	if (argc < 2) {
-        printf("Error: Missing NDI Source Name.\n");
-        return -1;
-    }
-    
+int main(int argc, char* argv[])
+{
 	// Not required, but "correct" (see the SDK documentation).
 	if (!NDIlib_initialize())
 		return 0;
 
 	// We are going to create an NDI finder that locates sources on the network.
-	int source_no_found = NULL;
-    NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
+	NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
 	if (!pNDI_find)
 		return 0;
 
@@ -35,7 +26,7 @@ int main(int argc, char* argv[]) {
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
-			printf("Searching for source...\n");
+			printf("No change to the sources found.\n");
 			continue;
 		}
 
@@ -43,51 +34,18 @@ int main(int argc, char* argv[]) {
 		uint32_t no_sources = 0;
 		const NDIlib_source_t* p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
 
-		// Find our source
-		for (uint32_t i = 0; i < no_sources; i++) {
-			#if debug
-                printf("enter loop");
-            #endif
-            if (strcmp(p_sources[i].p_ndi_name,argv[1])==0) {
-                #if debug
-                    printf("match found");
-                #endif
-                printf("Found %s\n", i + 1, p_sources[i].p_ndi_name);
-                #if debug
-                    printf("set source_no_found");
-                #endif
-                source_no_found = i;
-                break;
-            }
-        }
-        #if debug
-            printf("for loop exited");
-        #endif
-    }
+		// Display all the sources.
+		printf("Network sources (%u found).\n", no_sources);
+		for (uint32_t i = 0; i < no_sources; i++)
+			printf("%u. %s\n", i + 1, p_sources[i].p_ndi_name);
+	}
 
-    #if debug
-        printf("test source_no_found");
-    #endif
-    if (!source_no_found) {
-        printf("Error: Source not found.\n");
-        return -2;
-    }
-
-    // Destroy the NDI finder
-    #if debug
-        printf("Destroy the NDI finder");
-    #endif
-    NDIlib_find_destroy(pNDI_find);
+	// Destroy the NDI finder
+	NDIlib_find_destroy(pNDI_find);
 
 	// Finished
-    #if debug
-        printf("NDIlib_destroy");
-    #endif
 	NDIlib_destroy();
 
 	// Success. We are done
-    #if debug
-        printf("Success. We are done");
-    #endif
 	return 0;
 }
