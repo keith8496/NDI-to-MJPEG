@@ -53,12 +53,14 @@ int main(int argc, char* argv[])
         }
 
         // Exit loop if source was found
-        if (source_no_found > -1) {
-            printf("Source was found, exiting loop.\n");
-            break;
-        }
+        if (source_no_found > -1) break;
 
 	}
+
+    if (source_no_found == -1) {
+        printf("Error: Source was not found.\n");
+        return -2;
+    }
 
 	// Destroy the NDI finder
 	NDIlib_find_destroy(pNDI_find);
