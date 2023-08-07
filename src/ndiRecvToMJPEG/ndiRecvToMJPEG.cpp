@@ -47,14 +47,14 @@ int main(int argc, char* argv[])
 			const char* searchSourceName = argv[1];
             const char* ndiSourceName = p_sources[i].p_ndi_name;
             if ( strcmp(searchSourceName, ndiSourceName) == 0 ) {
-                printf("Found %u. %s\n", i + 1, ndiSourceName);
+                printf("Found %s\n", ndiSourceName);
                 source_no_found = i;
             }
         }
 
         // Exit loop if source was found
         if (source_no_found > -1) {
-            printf("Source was found, exiting loop.");
+            printf("Source was found, exiting loop.\n");
             break;
         }
 
