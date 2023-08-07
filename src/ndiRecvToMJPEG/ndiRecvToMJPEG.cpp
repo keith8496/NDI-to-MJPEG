@@ -75,9 +75,32 @@ int main(int argc, char* argv[])
 	// Destroy the NDI finder. We needed to have access to the pointers to p_sources[0]
 	NDIlib_find_destroy(pNDI_find);
 
-    /*
-        do more here
-    */
+	// Run for one minute
+	using namespace std::chrono;
+	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(5);) {
+		// The descriptors
+		NDIlib_video_frame_v2_t video_frame;
+		NDIlib_audio_frame_v2_t audio_frame;
+
+		switch (NDIlib_recv_capture_v2(pNDI_recv, &video_frame, &audio_frame, nullptr, 5000)) {
+			// No data
+			case NDIlib_frame_type_none:
+				printf("No data received.\n");
+				break;
+
+				// Video data
+			case NDIlib_frame_type_video:
+				printf("Video data received (%dx%d).\n", video_frame.xres, video_frame.yres);
+				NDIlib_recv_free_video_v2(pNDI_recv, &video_frame);
+				break;
+
+				// Audio data
+			case NDIlib_frame_type_audio:
+				printf("Audio data received (%d samples).\n", audio_frame.no_samples);
+				NDIlib_recv_free_audio_v2(pNDI_recv, &audio_frame);
+				break;
+		}
+	}
 
 	// Destroy the receiver
 	NDIlib_recv_destroy(pNDI_recv);
