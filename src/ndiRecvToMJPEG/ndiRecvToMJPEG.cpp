@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
 	if (argc < 2) {
         printf("Error: Missing NDI Source Name.");
-        return;
+        return -1;
     }
     
     // Not required, but "correct" (see the SDK documentation).
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	// We are going to create an NDI finder that locates sources on the network.
 	const NDIlib_source_t* p_sources = NULL;
-    const u_int32_t* source_no_found = NULL;
+    const uint32_t* source_no_found = NULL;
     NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
 	if (!pNDI_find)
 		return 0;
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     // Exit if no source found
     if (!source_no_found) {
         printf("No matching source was found. Exiting.");
-        return;
+        return -2;
     }
 
 	// We now have a source, so we create a receiver to look at it.
