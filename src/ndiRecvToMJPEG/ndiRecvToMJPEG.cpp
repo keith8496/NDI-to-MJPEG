@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <chrono>
-#include <string>
+#include <cstring>
 #include <Processing.NDI.Lib.h>
 
 #ifdef _WIN32
