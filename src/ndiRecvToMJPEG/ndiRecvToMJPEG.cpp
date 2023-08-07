@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 		return 0;
 
 	// Run for one minute
-	uint32_t source_no_found = -1;
+	int source_no_found = -1;
     using namespace std::chrono;
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
