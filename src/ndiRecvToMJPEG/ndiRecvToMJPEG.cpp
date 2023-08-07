@@ -14,7 +14,7 @@
 int main(int argc, char* argv[]) {
 
 	if (argc < 2) {
-        printf("Error: Missing NDI Source Name.");
+        printf("Error: Missing NDI Source Name.\n");
         return -1;
     }
     
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
 	// We are going to create an NDI finder that locates sources on the network.
 	const NDIlib_source_t* p_sources = NULL;
-    const uint32_t* source_no_found = NULL;
+    uint32_t source_no_found; //can i make this a pointer?
     NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
 	if (!pNDI_find)
 		return 0;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
-			printf("No change to the sources found.\n");
+			printf("Searching for source...\n");
 			continue;
 		}
 
@@ -43,18 +43,17 @@ int main(int argc, char* argv[]) {
 		p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
 
         // Search for our source
-		//printf("Network sources (%u found).\n", no_sources);
 		for (uint32_t i = 0; i < no_sources; i++)
 			if (strcmp(p_sources[i].p_ndi_name,argv[1])==0) {
-                printf("Found %s", i + 1, p_sources[i].p_ndi_name);
-                source_no_found = &i;
+                printf("Found %s\n", i + 1, p_sources[i].p_ndi_name);
+                source_no_found = i;
                 break;
             }
 	}
 
     // Exit if no source found
     if (!source_no_found) {
-        printf("No matching source was found. Exiting.");
+        printf("No matching source was found. Exiting.\n");
         return -2;
     }
 
@@ -66,7 +65,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 
 	// Connect to our sources
-	NDIlib_recv_connect(pNDI_recv, p_sources + *source_no_found);
+	NDIlib_recv_connect(pNDI_recv, p_sources + source_no_found);
 
 	// Destroy the NDI finder. We needed to have access to the pointers to p_sources[0]
 	NDIlib_find_destroy(pNDI_find);
