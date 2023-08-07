@@ -10,7 +10,7 @@ PROJECTS := \
 
 .PHONY: all
 all:
-	@if [ ! -f ./lib/libndi.so ] && [ ! -f ./lib/$(NDILIB)/libndi.so ]; then \
+	@if [ ! -f ../lib/libndi.so ] && [ ! -f ../lib/$(NDILIB)/libndi.so ]; then \
 		echo libndi.so not found: $(NDILIB) >&2; \
 		false; \
 	fi
