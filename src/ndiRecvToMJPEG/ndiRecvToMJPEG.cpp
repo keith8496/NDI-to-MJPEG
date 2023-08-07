@@ -12,7 +12,13 @@
 
 int main(int argc, char* argv[])
 {
-	// Not required, but "correct" (see the SDK documentation).
+	// Exit if missing arguments
+    if (argc < 2) {
+        printf("Error: Missing command line arguments.\n");
+        return -1;
+    }
+
+    // Not required, but "correct" (see the SDK documentation).
 	if (!NDIlib_initialize())
 		return 0;
 
