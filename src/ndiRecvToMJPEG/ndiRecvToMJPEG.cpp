@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 
 	// We are going to create an NDI finder that locates sources on the network.
-	uint32_t source_no_found;
+	int source_no_found = NULL;
     NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
 	if (!pNDI_find)
 		return 0;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (!source_no_found) {
-        printf("Error: Source not found!\n");
+        printf("Error: Source not found.\n");
         return -2;
     }
 
