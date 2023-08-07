@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
         printf("Error: Missing command line arguments.\n");
         return -1;
     }
+    const char* searchSourceName = argv[1];
 
     // Not required, but "correct" (see the SDK documentation).
 	if (!NDIlib_initialize())
@@ -28,7 +29,7 @@ int main(int argc, char* argv[])
 	if (!pNDI_find)
 		return 0;
 
-	// Run for one minute
+	// Search for one minute
 	int source_no_found = -1;
     const NDIlib_source_t* p_sources = NULL;
 	using namespace std::chrono;
@@ -45,8 +46,7 @@ int main(int argc, char* argv[])
 
 		// Find our source
 		for (uint32_t i = 0; i < no_sources; i++) {
-			const char* searchSourceName = argv[1];
-            const char* ndiSourceName = p_sources[i].p_ndi_name;
+			const char* ndiSourceName = p_sources[i].p_ndi_name;
             if ( strcmp(searchSourceName, ndiSourceName) == 0 ) {
                 printf("Found %s\n", ndiSourceName);
                 source_no_found = i;
@@ -64,8 +64,23 @@ int main(int argc, char* argv[])
         return -2;
     }
 
-	// Destroy the NDI finder
+	// We now have a source, so we create a receiver to look at it.
+	NDIlib_recv_instance_t pNDI_recv = NDIlib_recv_create_v3();
+	if (!pNDI_recv)
+		return 0;
+
+	// Connect to our sources
+    NDIlib_recv_connect(pNDI_recv, &p_sources[source_no_found]);
+
+	// Destroy the NDI finder. We needed to have access to the pointers to p_sources[0]
 	NDIlib_find_destroy(pNDI_find);
+
+    /*
+        do more here
+    */
+
+	// Destroy the receiver
+	NDIlib_recv_destroy(pNDI_recv);
 
 	// Finished
 	NDIlib_destroy();
