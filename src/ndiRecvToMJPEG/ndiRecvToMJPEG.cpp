@@ -50,7 +50,9 @@ int main(int argc, char* argv[])
                 printf("Found %u. %s\n", i + 1, ndiSourceName);
                 source_no_found = i;
             }
+            if (source_no_found) break;
         }
+        if (source_no_found) break;
 	}
 
 	// Destroy the NDI finder
