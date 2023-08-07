@@ -13,12 +13,19 @@
 
 int main(int argc, char* argv[]) {
 
-	// Not required, but "correct" (see the SDK documentation).
+	if (argc < 2) {
+        printf("Error: Missing NDI Source Name.");
+        return;
+    }
+    
+    // Not required, but "correct" (see the SDK documentation).
 	if (!NDIlib_initialize())
 		return 0;
 
 	// We are going to create an NDI finder that locates sources on the network.
-	NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
+	const NDIlib_source_t* p_sources = NULL;
+    const u_int32_t* source_no_found = NULL;
+    NDIlib_find_instance_t pNDI_find = NDIlib_find_create_v2();
 	if (!pNDI_find)
 		return 0;
 
@@ -27,26 +34,72 @@ int main(int argc, char* argv[]) {
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
-			//printf("No change to the sources found.\n");
+			printf("No change to the sources found.\n");
 			continue;
 		}
 
 		// Get the updated list of sources
 		uint32_t no_sources = 0;
-        int no_match = -1;
-		const NDIlib_source_t* p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
+		p_sources = NDIlib_find_get_current_sources(pNDI_find, &no_sources);
 
         // Search for our source
 		//printf("Network sources (%u found).\n", no_sources);
 		for (uint32_t i = 0; i < no_sources; i++)
 			if (strcmp(p_sources[i].p_ndi_name,argv[1])==0) {
-                no_match = i;
-                printf("Match: %u. %s\n", i + 1, p_sources[i].p_ndi_name);
+                printf("Found %s", i + 1, p_sources[i].p_ndi_name);
+                source_no_found = &i;
+                break;
             }
 	}
 
-	// Destroy the NDI finder
+    // Exit if no source found
+    if (!source_no_found) {
+        printf("No matching source was found. Exiting.");
+        return;
+    }
+
+	// We now have a source, so we create a receiver to look at it.
+	NDIlib_recv_create_v3_t recv_desc;
+	recv_desc.color_format = NDIlib_recv_color_format_RGBX_RGBA;
+	NDIlib_recv_instance_t pNDI_recv = NDIlib_recv_create_v3(&recv_desc);
+	if (!pNDI_recv)
+		return 0;
+
+	// Connect to our sources
+	NDIlib_recv_connect(pNDI_recv, p_sources + *source_no_found);
+
+	// Destroy the NDI finder. We needed to have access to the pointers to p_sources[0]
 	NDIlib_find_destroy(pNDI_find);
+
+	// Run for one minute
+	using namespace std::chrono;
+	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(5);) {
+		// The descriptors
+		NDIlib_video_frame_v2_t video_frame;
+		NDIlib_audio_frame_v2_t audio_frame;
+
+		switch (NDIlib_recv_capture_v2(pNDI_recv, &video_frame, &audio_frame, nullptr, 5000)) {
+			// No data
+			case NDIlib_frame_type_none:
+				printf("No data received.\n");
+				break;
+
+				// Video data
+			case NDIlib_frame_type_video:
+				printf("Video data received (%dx%d).\n", video_frame.xres, video_frame.yres);
+				NDIlib_recv_free_video_v2(pNDI_recv, &video_frame);
+				break;
+
+				// Audio data
+			case NDIlib_frame_type_audio:
+				printf("Audio data received (%d samples).\n", audio_frame.no_samples);
+				NDIlib_recv_free_audio_v2(pNDI_recv, &audio_frame);
+				break;
+		}
+	}
+
+	// Destroy the receiver
+	NDIlib_recv_destroy(pNDI_recv);
 
 	// Finished
 	NDIlib_destroy();
