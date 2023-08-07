@@ -6,7 +6,8 @@ endif
 BMDSDK := NDIlib_Send_BMD/BMDSDK/Linux
 
 PROJECTS := \
-	ndiFind
+	ndiFind \
+	ndiRecvWebControl
 
 .PHONY: all
 all:
