@@ -1,6 +1,6 @@
 CC         ?= gcc
 CXX        ?= g++
-CXXFLAGS   := -std=c++11 -pthread -I../../include
+CXXFLAGS   := -std=c++11 -pthread -I../include
 LDFLAGS    := -L../lib/$(NDILIB) -Wl,-rpath='$$ORIGIN' -Wl,--allow-shlib-undefined -Wl,--as-needed
 LDLIBS     := -lndi -ldl
 RM         := @rm
