@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
 		return 0;
 
 	// Run for one minute
-	using namespace std::chrono;
+	uint32_t source_no_found;
+    using namespace std::chrono;
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(1);) {
 		// Wait up till 5 seconds to check for new sources to be added or removed
 		if (!NDIlib_find_wait_for_sources(pNDI_find, 5000 /* milliseconds */)) {
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
             const char* ndiSourceName = p_sources[i].p_ndi_name;
             if ( strcmp(searchSourceName, ndiSourceName) == 0 ) {
                 printf("Found %u. %s\n", i + 1, ndiSourceName);
-                break;
+                source_no_found = i;
             }
         }
 	}
