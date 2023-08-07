@@ -5,7 +5,8 @@ endif
 
 BMDSDK := NDIlib_Send_BMD/BMDSDK/Linux
 
-PROJECTS := src
+PROJECTS := \
+	ndiFind
 
 .PHONY: all
 all:
@@ -15,7 +16,7 @@ all:
 	fi
 	-@for proj in $(PROJECTS); do \
 		if [ -d $$proj ]; then \
-			if [ -f ../lib/libndi.so ]; then \
+			if [ -f ../../lib/libndi.so ]; then \
 				$(MAKE) -C $$proj -f ../Makefile.proj NDILIB=; \
 			else \
 				$(MAKE) -C $$proj -f ../Makefile.proj NDILIB=$(NDILIB); \

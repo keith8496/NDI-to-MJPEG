@@ -1,7 +1,7 @@
 CC         ?= gcc
 CXX        ?= g++
-CXXFLAGS   := -std=c++11 -pthread -I../include
-LDFLAGS    := -L../lib/$(NDILIB) -Wl,-rpath='$$ORIGIN' -Wl,--allow-shlib-undefined -Wl,--as-needed
+CXXFLAGS   := -std=c++11 -pthread -I../../include
+LDFLAGS    := -L../../lib/$(NDILIB) -Wl,-rpath='$$ORIGIN' -Wl,--allow-shlib-undefined -Wl,--as-needed
 LDLIBS     := -lndi -ldl
 RM         := @rm
 LN         := @ln
@@ -23,8 +23,8 @@ all: $(PROJ) $(NDILIBFILE)
 clean:
 	-$(RM) -f $(PROJ) $(NDILIBFILE)
 
-$(NDILIBFILE): ../lib/$(NDILIB)/$(NDILIBFILE)
-	$(LN) -s ../lib/$(NDILIB)/$(NDILIBFILE)
+$(NDILIBFILE): ../../lib/$(NDILIB)/$(NDILIBFILE)
+	$(LN) -s ../../lib/$(NDILIB)/$(NDILIBFILE)
 
 $(PROJ): $(SRC)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
